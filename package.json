@@ -1,7 +1,6 @@
 {
-  "name": "assignment-client",
-  "version": "0.1.0",
-  "private": true,
+  "name": "client",
+  "version": "0.0.1",
   "dependencies": {
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
@@ -21,5 +20,6 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "author":"Rui Nan"
 }

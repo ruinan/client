@@ -1,0 +1,20 @@
+.circle {
+    border-radius: 100%;
+    position: absolute;
+    background-color: blue;
+    z-index: 100;
+    animation-duration: 0.5s;
+    animation: showCircle;
+}
+
+@keyframes showCircle {
+    from {
+        width: 0rem;
+        height: 0rem;
+    }
+    to {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+}
+
