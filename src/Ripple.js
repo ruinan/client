@@ -10,13 +10,20 @@ export default class Ripple extends Component {
         isActive: false,
     };
 
+    getMousePosition = e => {
+        const scrollX = document.documentElement.scrollLeft || document.body.scrollLeft;
+        const scrollY = document.documentElement.scrollTop || document.body.scrollTop;
+        const x = e.pageX || e.clientX + scrollX;
+        const y = e.pageY || e.clientY + scrollY;
+        return {x, y};
+    }
+
     handlePointerDown = e => {
         e.stopPropagation();
-        const x = e.clientX;
-        const y = e.clientY;
+        const position = this.getMousePosition(e);
         this.setState({
-            left: `${x - 17}px`,
-            top: `${y - 17}px`,
+            left: `${position.x - 17}px`,
+            top: `${position.y - 17}px`,
             transform: 'scale(1)',
             opacity: '1',
             isActive: true,
@@ -40,12 +47,10 @@ export default class Ripple extends Component {
     handlePointerMove = e => {
         e.stopPropagation();
         if (this.state.isActive) {
-            console.log('move');
-            const x = e.clientX;
-            const y = e.clientY;
+           const position = this.getMousePosition(e);
             this.setState({
-                left: `${x - 17}px`,
-                top: `${y - 17}px`,
+                left: `${position.x - 17}px`,
+                top: `${position.y - 17}px`,
                 transform: 'scale(1)',
                 opacity: '1',
             });
