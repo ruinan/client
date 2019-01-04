@@ -7,9 +7,14 @@ class App extends Component {
         return (
             <div className="App">
                 <Ripple>
-                    <div className="content" />
+                    <div className="section">
+                        <button>This is a button</button>
+                        <input type="text" />
+                    </div>
                 </Ripple>
-                <div className="no-content" />
+                <div className="section">
+                    <h1>Ripple does not work on this side </h1>
+                </div>
             </div>
         );
     }
