@@ -13,8 +13,8 @@ export default class Ripple extends Component {
     getMousePosition = e => {
         const scrollX = document.documentElement.scrollLeft || document.body.scrollLeft;
         const scrollY = document.documentElement.scrollTop || document.body.scrollTop;
-        const x = e.pageX || e.clientX + scrollX;
-        const y = e.pageY || e.clientY + scrollY;
+        const x = e.pageX || e.clientX + scrollX || e.touches[0].clientX + scrollX;
+        const y = e.pageY || e.clientY + scrollY || e.touches[0].clientY + scrollY;
         return {x, y};
     }
 
@@ -56,6 +56,7 @@ export default class Ripple extends Component {
             });
         }
     };
+
     render() {
         return (
             <div
@@ -63,6 +64,9 @@ export default class Ripple extends Component {
                 onPointerDown={this.handlePointerDown}
                 onPointerUp={this.handlePointerUp}
                 onPointerMove={this.handlePointerMove}
+                onTouchStart={this.handlePointerDown}
+                onTouchEnd={this.handlePointerUp}
+                onTouchMove={this.handlePointerMove}
             >
                 <div
                     className="ripple"

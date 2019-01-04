@@ -12,9 +12,9 @@ class App extends Component {
                         <input type="text" />
                     </div>
                 </Ripple>
-                {/* <div className="section">
+                <div className="section">
                     <h1>Ripple does not work on this side </h1>
-                </div> */}
+                </div>
             </div>
         );
     }
