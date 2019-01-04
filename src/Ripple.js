@@ -1,30 +1,50 @@
-import React from 'react';
+import React, { Component } from 'react';
 import './Ripple.css';
-export class Ripple extends React.Component {
-    state = {
-        styles: {
-            top: 0,
-            left: 0,
-            width: '0',
-            height: '0',
-        }
-    }
-    circle = React.createRef();
 
-    handleMouseDown = (event) => {
-        event.preventDefault();
-        console.log(event.nativeEvent.offsetY, event.nativeEvent.offsetX);
+export default class Ripple extends Component {
+    state = {
+        left: '0',
+        top: '0',
+        transform: 'scale(0)',
+        opacity: '0',
+    };
+
+    handlePointerDown = e => {
+        e.stopPropagation();
+        const x = e.clientX;
+        const y = e.clientY;
         this.setState({
-            styles: {
-                top: event.nativeEvent.offsetY - 12.5,
-                left: event.nativeEvent.offsetX - 12.5,
-            },
+            left: `${x - 17}px`,
+            top: `${y - 17}px`,
+            transform: 'scale(1)',
+            opacity: '1',
         });
-    }
-    
-    render () {
-        return (<div className='area' onMouseDown={this.handleMouseDown} onMouseUp={this.handleMouseUp}>
-            <div className='circle' ref={this.circle} style={this.state.styles}/>
-        </div>);
+    };
+
+    handlePointerUp = e => {
+        e.stopPropagation();
+        this.setState({
+            transform: 'scale(1.2)',
+            opacity: '0',
+        });
+    };
+    render() {
+        return (
+            <div
+                className="container"
+                onPointerDown={this.handlePointerDown}
+                onPointerUp={this.handlePointerUp}
+            >
+                <div
+                    className="ripple"
+                    style={{
+                        left: this.state.left,
+                        top: this.state.top,
+                        transform: this.state.transform,
+                        opacity: this.state.opacity,
+                    }}
+                />
+            </div>
+        );
     }
 }
