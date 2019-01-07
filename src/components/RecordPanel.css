@@ -1,0 +1,55 @@
+.container {
+    width: 100%;
+    height: auto;
+}
+
+button {
+    height: 3rem;
+    width: auto;
+    padding: 0 1rem;
+    font-size: 11px;
+    color: white;
+    margin: 1rem 0;
+    line-height: 3rem;
+    border: none;
+    margin: 0 1rem;
+    background-color: black;
+}
+
+@media screen and (max-width: 900px){
+    .button {
+        height: 4rem;
+        width: 10rem;
+    }
+}
+
+button:active {
+    background-color: gray;
+}
+
+.start {
+    background-color: green;
+}
+
+.stop {
+    background-color: red;
+    animation: heartbeat;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+}
+
+@keyframes heartbeat {
+    0% {
+        opacity: 0.5;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0.5;
+    }
+}
+
+.replay {
+    background-color: blue;
+}

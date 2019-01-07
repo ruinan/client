@@ -2,7 +2,7 @@ html,
 body {
     padding: 0;
     margin: 0;
-    box-sizing: border-box;
+
     font-size: 10px;
 }
 
@@ -13,9 +13,28 @@ body {
 }
 
 .section {
-    height: 100rem;
+    height: 50rem;
     width: 100%;
     border: 1px solid black;
     z-index: 100;
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    box-sizing: border-box;
 }
 
+.control_panel {
+    height: auto;
+    width: auto;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: transparent;
+}
+
+input {
+    height: 3rem;
+    width: 9rem;
+    border: 1px solid red;
+    padding: 0.5rem;
+    flex: 2 2 100%;
+}
