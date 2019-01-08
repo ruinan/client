@@ -12,77 +12,85 @@ export default class Ripple extends Component {
         transform: 'scale(0)',
         opacity: '0',
         isActive: false,
-        timestamp: 0,
     };
 
+    // componentDidUpdate(prevProps) {
+    //     if (prevProps.record !== this.props.record) {
+    //         console.log('mount', this.props.record);
+    //     }
+    // }
+    circle = React.createRef();
     getMousePosition = e => {
         const x = e.pageX || e.changedTouches[0].pageX;
         const y = e.pageY || e.changedTouches[0].pageY;
-        console.log(x, y);
-        return {x, y};
-    }
+        return { x, y };
+    };
 
     handlePointerDown = e => {
         if (e.pointerType === 'touch') {
             return;
         }
         this.handleDown(e);
-    }
+    };
 
     handlePointerUp = e => {
         if (e.pointerType === 'touch') {
             return;
         }
         this.handleUp(e);
-    }
+    };
 
     handlePointerMove = e => {
         if (e.pointerType === 'touch') {
             return;
         }
         this.handleMove(e);
-    }
+    };
 
     handleDown = e => {
         e.stopPropagation();
         const position = this.getMousePosition(e);
-        console.log('down', position);
-            this.setState({
-                left: position.x - 17,
-                top: position.y - 17,
-                transform: 'scale(1)',
-                opacity: '1',
-                isActive: true,
-                timestamp: Date.now(),
+        this.setState({
+            left: position.x - 17,
+            top: position.y - 17,
+            transform: 'scale(1)',
+            opacity: '1',
+            isActive: true,
+        });
+        if (this.props.isRecording) {
+            this.props.updateRecord({
+                ...position,
+                operation: DOWN,
+                target: e.target,
+                timestamp: Date.now() - this.props.startTimestamp,
             });
-            if (this.props.recordStatus) {
-                this.props.updateRecord({...position, operation: DOWN, target: e.target, timestamp: Date.now()});
-            }
-        
+        }
     };
 
     handleUp = e => {
         e.stopPropagation();
-        console.log('up');
         this.setState({
             opacity: '0',
             transform: 'scale(0)',
             isActive: false,
         });
-        if (this.props.recordStatus) {
+        if (this.props.isRecording) {
             const position = this.getMousePosition(e);
-            this.props.updateRecord({...position, operation: UP, target: e.target, timestamp: Date.now()});
+            this.props.updateRecord({
+                ...position,
+                operation: UP,
+                target: e.target,
+                timestamp: Date.now() - this.props.startTimestamp,
+            });
         }
     };
-
 
     handleMove = e => {
         e.stopPropagation();
         if (this.state.isActive) {
             const position = this.getMousePosition(e);
-            console.log(position, this.state.left, this.state.top);
             const now = Date.now();
-            if (now - this.state.timestamp > 10) {
+            if (now - this.state.timestamp > 10) { // 10ms sampling
                 this.setState({
                     left: position.x - 17,
                     top: position.y - 17,
@@ -91,18 +99,47 @@ export default class Ripple extends Component {
                     timestamp: now,
                 });
 
-                if (this.props.recordStatus) {
-                    this.props.updateRecord({...position, operation: MOVE, target: e.target, timestamp: Date.now()});
+                if (this.props.isRecording) {
+                    this.props.updateRecord({
+                        ...position,
+                        operation: MOVE,
+                        target: e.target,
+                        timestamp: Date.now() - this.props.startTimestamp,
+                    });
                 }
             }
-        
         }
     };
 
     render() {
-        const left = this.props.record && this.props.isReplaying ? `${this.props.record.left}px` : `${this.state.left}px`;
-        const top = this.props.record && this.props.isReplaying ? `${this.props.record.top}px` : `${this.state.top}px`;
-        console.log('record',this.props.record);
+        const left =
+            this.props.record && this.props.isReplaying
+                ? `${this.props.record.x}px`
+                : `${this.state.left}px`;
+        const top =
+            this.props.record && this.props.isReplaying
+                ? `${this.props.record.y}px`
+                : `${this.state.top}px`;
+
+        const transform =
+            this.props.record && this.props.isReplaying
+                ? `scale(1)`
+                : this.state.transform;
+
+        const opacity =
+            this.props.record && this.props.isReplaying
+                ? 1
+                : this.state.opacity;
+
+        console.log(
+            'ripple',
+            this.props.record,
+            this.props.isReplaying,
+            left,
+            top,
+            transform,
+            opacity,
+        );
         return (
             <div
                 className="container"
@@ -112,22 +149,19 @@ export default class Ripple extends Component {
                 onTouchStart={this.handleDown}
                 onTouchEnd={this.handleUp}
                 onTouchMove={this.handleMove}
-
             >
                 <div
                     className="ripple"
                     style={{
-                        left: left,
-                        top: top,
-                        transform: this.state.transform,
-                        opacity: this.state.opacity,
+                        left,
+                        top,
+                        transform,
+                        opacity,
                     }}
+                    ref={this.circle}
                 />
                 {this.props.children}
             </div>
         );
     }
 }
-
-
-
