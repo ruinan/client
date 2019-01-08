@@ -87,10 +87,23 @@ export default class Ripple extends Component {
 
     handleMove = e => {
         e.stopPropagation();
+ 
         if (this.state.isActive) {
+            console.log('move');
             const position = this.getMousePosition(e);
             const now = Date.now();
-            if (now - this.state.timestamp > 10) { // 10ms sampling
+            // setInterval(() => {
+            //     this.setState({
+            //         left: position.x - 17,
+            //         top: position.y - 17,
+            //         transform: 'scale(1)',
+            //         opacity: '1',
+            //         // timestamp: now,
+            //     });
+            // }, 10);
+
+            // if (now - this.state.timestamp > 10) { // 10ms sampling
+
                 this.setState({
                     left: position.x - 17,
                     top: position.y - 17,
@@ -107,7 +120,7 @@ export default class Ripple extends Component {
                         timestamp: Date.now() - this.props.startTimestamp,
                     });
                 }
-            }
+            // }
         }
     };
 
@@ -123,13 +136,23 @@ export default class Ripple extends Component {
 
         const transform =
             this.props.record && this.props.isReplaying
-                ? `scale(1)`
+                ? (this.props.record.operation === DOWN || this.props.record.operation === MOVE ? `scale(1)`: `scale(0)`)
                 : this.state.transform;
 
         const opacity =
             this.props.record && this.props.isReplaying
-                ? 1
+                ? (this.props.record.operation === DOWN || this.props.record.operation === MOVE ? 1 : 0)
                 : this.state.opacity;
+
+        if (this.props.record && this.props.record.operation === DOWN ) {
+            // this.props.record.target.onMouseDown();
+            console.log(this.props.record.target);
+            this.props.record.target.click();
+        } else if (this.props.record && this.props.record.operation === UP) {
+            // this.props.record.target.onMouseUp();
+            console.log(this.props.record.target);
+            this.props.record.target.click();
+        }
 
         console.log(
             'ripple',

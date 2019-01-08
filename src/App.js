@@ -43,8 +43,15 @@ class App extends Component {
                     const record = records.shift();
                     console.log('shift', record);
                     this.setState({ record });
+                    if (records.length === 0) {
+                        setTimeout(() => {
+                            this.setState({isReplaying: false});
+                        }, 10);
+                        
+                    }
                 }, r.timestamp);
             } 
+            
         }
     };
     
