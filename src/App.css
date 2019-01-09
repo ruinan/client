@@ -12,9 +12,8 @@ body {
 }
 
 .section {
-    height: 50rem;
+    height: auto;
     width: 100%;
-    border: 1px solid black;
     z-index: 100;
     display: flex;
     justify-content: flex-start;

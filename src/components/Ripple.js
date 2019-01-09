@@ -17,39 +17,8 @@ export default class Ripple extends Component {
     };
 
     circle = React.createRef();
-    // const left =
-    // this.props.record && this.props.isReplaying
-    //     ? `${this.props.record.x - 17}`
-    //     : `${this.state.left}px`;
-    // const top =
-    //     this.props.record && this.props.isReplaying
-    //         ? `${this.props.record.y - 17}px`
-    //         : `${this.state.top}px`;
-
-    // const transform =
-    //     this.props.record && this.props.isReplaying
-    //         ? (this.props.record.operation === DOWN || this.props.record.operation === MOVE ? `scale(1)`: `scale(0)`)
-    //         : this.state.transform;
-
-    // const opacity =
-    //     this.props.record && this.props.isReplaying
-    //         ? (this.props.record.operation === DOWN || this.props.record.operation === MOVE ? 1 : 0)
-    //         : this.state.opacity;
-
-    // if (this.props.record && this.props.record.operation === DOWN ) {
-    //     console.log('trigger down');
-    //     ReactTestUtils.Simulate.mouseDown(this.props.record.target);
-    // } else if (this.props.record && this.props.record.operation === MOVE) {
-    //     console.log('trigger move');
-    //     ReactTestUtils.Simulate.mouseMove(this.props.record.target);
-    // }  else if (this.props.record && this.props.record.operation === UP) {
-    //     console.log('trigger up and click');
-    //     ReactTestUtils.Simulate.mouseUp(this.props.record.target);
-    //     // ReactTestUtils.Simulate.click(this.props.record.target);
-    // }
 
     componentDidUpdate(prevProps) {
-        console.log('did update');
         if (prevProps.record !== this.props.record) {
             const left =
                 this.props.record && this.props.isReplaying
@@ -71,15 +40,11 @@ export default class Ripple extends Component {
                     : this.state.opacity;
 
             if (this.props.record && this.props.record.operation === DOWN ) {
-                console.log('trigger down');
                 ReactTestUtils.Simulate.mouseDown(this.props.record.target);
             } else if (this.props.record && this.props.record.operation === MOVE) {
-                console.log('trigger move');
                 ReactTestUtils.Simulate.mouseMove(this.props.record.target);
             }  else if (this.props.record && this.props.record.operation === UP) {
-                console.log('trigger up and click');
                 ReactTestUtils.Simulate.mouseUp(this.props.record.target);
-                // ReactTestUtils.Simulate.click(this.props.record.target);
             }
             this.setState({
                 left,
@@ -118,55 +83,52 @@ export default class Ripple extends Component {
     };
 
     handleDown = e => {
-        console.log('is replaying', this.props.isReplaying);
         if (this.props.isReplaying) {
             return;
         }
-            e.stopPropagation();
-            const position = this.getMousePosition(e);
-            this.setState({
-                left: position.x - 17,
-                top: position.y - 17,
-                transform: 'scale(1)',
-                opacity: '1',
-                isActive: true,
+        // refine
+        e.stopPropagation();
+        const position = this.getMousePosition(e);
+        this.setState({
+            left: position.x - 17,
+            top: position.y - 17,
+            transform: 'scale(1)',
+            opacity: '1',
+            isActive: true,
+        });
+        if (this.props.isRecording) {
+            this.props.updateRecord({
+                ...position,
+                operation: DOWN,
+                target: ReactDOM.findDOMNode(e.target),
+                timestamp: Date.now() - this.props.startTimestamp,
             });
-            if (this.props.isRecording) {
-                this.props.updateRecord({
-                    ...position,
-                    operation: DOWN,
-                    target: ReactDOM.findDOMNode(e.target),
-                    timestamp: Date.now() - this.props.startTimestamp,
-                });
-            }
+        }
 
     };
 
     handleUp = e => {
-        console.log('is replaying', this.props.isReplaying);
         if (this.props.isReplaying) {
             return;
         }
-            e.stopPropagation();
-            this.setState({
-                opacity: '0',
-                transform: 'scale(0)',
-                isActive: false,
+        e.stopPropagation();
+        this.setState({
+            opacity: '0',
+            transform: 'scale(0)',
+            isActive: false,
+        });
+        if (this.props.isRecording) {
+            const position = this.getMousePosition(e);
+            this.props.updateRecord({
+                ...position,
+                operation: UP,
+                target: ReactDOM.findDOMNode(e.target),
+                timestamp: Date.now() - this.props.startTimestamp,
             });
-            if (this.props.isRecording) {
-                const position = this.getMousePosition(e);
-                this.props.updateRecord({
-                    ...position,
-                    operation: UP,
-                    target: ReactDOM.findDOMNode(e.target),
-                    timestamp: Date.now() - this.props.startTimestamp,
-                });
-            }
-    
+        }
     };
 
     handleMove = e => {
-        console.log('is replaying', this.props.isReplaying);
         if (this.props.isReplaying) {
             
             return;
