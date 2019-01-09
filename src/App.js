@@ -12,9 +12,14 @@ class App extends Component {
         record: undefined,
         startTimestamp: -1,
         stopTimestamp: -1,
+        index: 0,
+        color: 'blue',
     };
+    colorSet = ['blue', 'yellow', 'red'];
 
     startRecord = e => {
+        e.stopPropagation();
+        e.preventDefault();
         this.setState({
             isRecording: true,
             records: [],
@@ -23,6 +28,8 @@ class App extends Component {
     };
 
     stopRecord = e => {
+        e.stopPropagation();
+        e.preventDefault();
         // submit records
         this.setState({
             isRecording: false,
@@ -32,6 +39,8 @@ class App extends Component {
 
     startReplay = e => {
         // fetch records
+        e.stopPropagation();
+        e.preventDefault();
         console.log('start replay');
         this.setState({
             isReplaying: true,
@@ -56,6 +65,8 @@ class App extends Component {
     };
     
     stopReplay = e => {
+        e.stopPropagation();
+        e.preventDefault();
         this.setState({
             isReplaying: false,
         });
@@ -81,12 +92,31 @@ class App extends Component {
         console.log('button up');
     }
 
-    handleCLick = (e) => {
+    handleClick = (e) => {
         e.stopPropagation();
+        e.preventDefault();
         console.log('click');
+        if (this.state.color === 'blue') {
+            this.setState({color: 'yellow'});
+        } else if (this.state.color === 'yellow') {
+            this.setState({color: 'red'});
+        } else {
+            this.setState({color: 'blue'});
+        }
+        // let index = this.state.index;
+        // index++;
+        // if (index > this.colorSet.length - 1) {
+        //     index = 0;
+        // }
+        // // console.log(color);
+        // this.setState({
+        //     index,
+        // });
+
     }
 
     render() {
+        // const color = this.state.colorSet[this.state.color];
         return (
             <div className="App">
                 <div className="control_panel">
@@ -107,17 +137,7 @@ class App extends Component {
                     startTimestamp={this.state.startTimestamp}
                 >
                     <div className="section">
-                        <button className="button" onMouseDown={this.handleMouseDown} onMouseUp = {this.handleMouseUp} onClick={this.handleCLick}>button1</button>
-                        <button className="button">button2</button>
-                        <button className="button">button3</button>
-                        <input type="text" placeholder="input" />
-
-                        <label htmlFor="checkbox1">Checkbox1</label>
-                        <input type="checkbox" id="checkbox1" />
-                        <label htmlFor="checkbox2">Checkbox2</label>
-                        <input type="checkbox" id="checkbox2" />
-                        <label htmlFor="checkbox3">Checkbox3</label>
-                        <input type="checkbox" id="checkbox3" />
+                        <button className="button" onMouseUp={this.handleClick} style={{backgroundColor: this.state.color}}>{`${this.state.color} button`}</button>
                     </div>
                 </Ripple>
             </div>
