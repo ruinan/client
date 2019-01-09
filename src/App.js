@@ -41,7 +41,7 @@ class App extends Component {
             for (const r of records) {
                 setTimeout(() => {
                     const record = records.shift();
-                    console.log('shift', record);
+                    console.log('call', record);
                     this.setState({ record });
                     if (records.length === 0) {
                         setTimeout(() => {
@@ -71,6 +71,21 @@ class App extends Component {
         });
     };
 
+    handleMouseDown = (e) => {
+        e.stopPropagation();
+        console.log('button down');
+    }
+
+    handleMouseUp = (e) => {
+        e.stopPropagation();
+        console.log('button up');
+    }
+
+    handleCLick = (e) => {
+        e.stopPropagation();
+        console.log('click');
+    }
+
     render() {
         return (
             <div className="App">
@@ -92,7 +107,7 @@ class App extends Component {
                     startTimestamp={this.state.startTimestamp}
                 >
                     <div className="section">
-                        <button className="button">button1</button>
+                        <button className="button" onMouseDown={this.handleMouseDown} onMouseUp = {this.handleMouseUp} onClick={this.handleCLick}>button1</button>
                         <button className="button">button2</button>
                         <button className="button">button3</button>
                         <input type="text" placeholder="input" />

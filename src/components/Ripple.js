@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
+import ReactTestUtils from 'react-dom/test-utils';
 import ReactDOM from 'react-dom';
 import './Ripple.css';
 
 const MOVE = 'move';
 const DOWN = 'down';
 const UP = 'up';
+const CLICK = 'click';
 
 export default class Ripple extends Component {
     state = {
@@ -15,11 +17,6 @@ export default class Ripple extends Component {
         isActive: false,
     };
 
-    // componentDidUpdate(prevProps) {
-    //     if (prevProps.record !== this.props.record) {
-    //         console.log('mount', this.props.record);
-    //     }
-    // }
     circle = React.createRef();
     getMousePosition = e => {
         const x = e.pageX || e.changedTouches[0].pageX;
@@ -88,83 +85,60 @@ export default class Ripple extends Component {
 
     handleMove = e => {
         e.stopPropagation();
- 
         if (this.state.isActive) {
-            console.log('move');
             const position = this.getMousePosition(e);
             const now = Date.now();
-            // setInterval(() => {
-            //     this.setState({
-            //         left: position.x - 17,
-            //         top: position.y - 17,
-            //         transform: 'scale(1)',
-            //         opacity: '1',
-            //         // timestamp: now,
-            //     });
-            // }, 10);
+            this.setState({
+                left: position.x - 17,
+                top: position.y - 17,
+                transform: 'scale(1)',
+                opacity: '1',
+                timestamp: now,
+            });
 
-            // if (now - this.state.timestamp > 10) { // 10ms sampling
-
-                this.setState({
-                    left: position.x - 17,
-                    top: position.y - 17,
-                    transform: 'scale(1)',
-                    opacity: '1',
-                    timestamp: now,
+            if (this.props.isRecording) {
+                this.props.updateRecord({
+                    ...position,
+                    operation: MOVE,
+                    target: ReactDOM.findDOMNode(e.target),
+                    timestamp: Date.now() - this.props.startTimestamp,
                 });
-
-                if (this.props.isRecording) {
-                    this.props.updateRecord({
-                        ...position,
-                        operation: MOVE,
-                        target: ReactDOM.findDOMNode(e.target),
-                        timestamp: Date.now() - this.props.startTimestamp,
-                    });
-                }
-            // }
+            }
         }
     };
 
     render() {
         const left =
             this.props.record && this.props.isReplaying
-                ? `${this.props.record.x}px`
+                ? `${this.props.record.x - 17}px`
                 : `${this.state.left}px`;
         const top =
             this.props.record && this.props.isReplaying
-                ? `${this.props.record.y}px`
+                ? `${this.props.record.y - 17}px`
                 : `${this.state.top}px`;
 
         const transform =
             this.props.record && this.props.isReplaying
-                ? (this.props.record.operation === DOWN || this.props.record.operation === MOVE ? `scale(1)`: `scale(0)`)
+                ? (this.props.record.operation === DOWN || this.props.record.operation === MOVE || this.props.record.operation === CLICK ? `scale(1)`: `scale(0)`)
                 : this.state.transform;
 
         const opacity =
             this.props.record && this.props.isReplaying
-                ? (this.props.record.operation === DOWN || this.props.record.operation === MOVE ? 1 : 0)
+                ? (this.props.record.operation === DOWN || this.props.record.operation === MOVE || this.props.record.operation === CLICK? 1 : 0)
                 : this.state.opacity;
 
         if (this.props.record && this.props.record.operation === DOWN ) {
-            // this.props.record.target.onMouseDown();
-            console.log(this.props.record.target.mousedown());
-            this.props.record.target.click();
+            ReactTestUtils.Simulate.mouseDown(this.props.record.target);
 
-        } else if (this.props.record && this.props.record.operation === UP) {
-            // this.props.record.target.onMouseUp();
-            console.log(this.props.record.target.mouseup());
-            this.props.record.target.click();
+        } else if (
+            this.props.record && this.props.record.operation === MOVE
+        ) {
+            ReactTestUtils.Simulate.mouseMove(this.props.record.target);
+        }  else if (this.props.record && this.props.record.operation === UP) {
+            ReactTestUtils.Simulate.mouseUp(this.props.record.target);
+            ReactTestUtils.Simulate.click(this.props.record.target);
         }
-
-        // console.log(
-        //     'ripple',
-        //     this.props.record,
-        //     this.props.isReplaying,
-        //     left,
-        //     top,
-        //     transform,
-        //     opacity,
-        // );
+        
         return (
             <div
                 className="container"
