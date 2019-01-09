@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import './Ripple.css';
 
 const MOVE = 'move';
@@ -61,7 +62,7 @@ export default class Ripple extends Component {
             this.props.updateRecord({
                 ...position,
                 operation: DOWN,
-                target: e.target,
+                target: ReactDOM.findDOMNode(e.target),
                 timestamp: Date.now() - this.props.startTimestamp,
             });
         }
@@ -79,7 +80,7 @@ export default class Ripple extends Component {
             this.props.updateRecord({
                 ...position,
                 operation: UP,
-                target: e.target,
+                target: ReactDOM.findDOMNode(e.target),
                 timestamp: Date.now() - this.props.startTimestamp,
             });
         }
@@ -116,7 +117,7 @@ export default class Ripple extends Component {
                     this.props.updateRecord({
                         ...position,
                         operation: MOVE,
-                        target: e.target,
+                        target: ReactDOM.findDOMNode(e.target),
                         timestamp: Date.now() - this.props.startTimestamp,
                     });
                 }
@@ -146,23 +147,24 @@ export default class Ripple extends Component {
 
         if (this.props.record && this.props.record.operation === DOWN ) {
             // this.props.record.target.onMouseDown();
-            console.log(this.props.record.target);
+            console.log(this.props.record.target.mousedown());
             this.props.record.target.click();
+
         } else if (this.props.record && this.props.record.operation === UP) {
             // this.props.record.target.onMouseUp();
-            console.log(this.props.record.target);
+            console.log(this.props.record.target.mouseup());
             this.props.record.target.click();
         }
 
-        console.log(
-            'ripple',
-            this.props.record,
-            this.props.isReplaying,
-            left,
-            top,
-            transform,
-            opacity,
-        );
+        // console.log(
+        //     'ripple',
+        //     this.props.record,
+        //     this.props.isReplaying,
+        //     left,
+        //     top,
+        //     transform,
+        //     opacity,
+        // );
         return (
             <div
                 className="container"
