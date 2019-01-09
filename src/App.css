@@ -12,13 +12,14 @@ body {
 }
 
 .section {
-    height: auto;
+    height: 50rem;
     width: 100%;
     z-index: 100;
     display: flex;
     justify-content: flex-start;
     flex-wrap: wrap;
     box-sizing: border-box;
+    background-color: rgba(0, 0, 0, 0.5);
 }
 
 .control_panel {

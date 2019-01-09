@@ -10,11 +10,11 @@ class App extends Component {
         isReplaying: false,
         records: [],
         record: undefined,
-        startTimestamp: -1,
+        startTimestamp: -1, 
         stopTimestamp: -1,
-        index: 0,
-        color: 'blue',
+        index: 0, // color set index
     };
+
     colorSet = ['blue', 'yellow', 'red'];
 
     startRecord = e => {
@@ -41,7 +41,6 @@ class App extends Component {
         // fetch records
         e.stopPropagation();
         e.preventDefault();
-        console.log('start replay');
         this.setState({
             isReplaying: true,
         });
@@ -50,20 +49,17 @@ class App extends Component {
             for (const r of records) {
                 setTimeout(() => {
                     const record = records.shift();
-                    console.log('call', record);
                     this.setState({ record });
                     if (records.length === 0) {
                         setTimeout(() => {
-                            this.setState({isReplaying: false});
+                            this.setState({ isReplaying: false });
                         }, 10);
-                        
                     }
                 }, r.timestamp);
-            } 
-            
+            }
         }
     };
-    
+
     stopReplay = e => {
         e.stopPropagation();
         e.preventDefault();
@@ -82,41 +78,31 @@ class App extends Component {
         });
     };
 
-    handleMouseDown = (e) => {
+    handleMouseDown = e => {
         e.stopPropagation();
         console.log('button down');
-    }
+    };
 
-    handleMouseUp = (e) => {
+    handleMouseUp = e => {
         e.stopPropagation();
         console.log('button up');
-    }
+    };
 
-    handleClick = (e) => {
+    handleClick = e => {
         e.stopPropagation();
         e.preventDefault();
-        console.log('click');
-        if (this.state.color === 'blue') {
-            this.setState({color: 'yellow'});
-        } else if (this.state.color === 'yellow') {
-            this.setState({color: 'red'});
-        } else {
-            this.setState({color: 'blue'});
+        let index = this.state.index;
+        index++;
+        if (index > this.colorSet.length - 1) {
+            index = 0;
         }
-        // let index = this.state.index;
-        // index++;
-        // if (index > this.colorSet.length - 1) {
-        //     index = 0;
-        // }
-        // // console.log(color);
-        // this.setState({
-        //     index,
-        // });
-
-    }
+        this.setState({
+            index,
+        });
+    };
 
     render() {
-        // const color = this.state.colorSet[this.state.color];
+        const color = this.colorSet[this.state.index];
         return (
             <div className="App">
                 <div className="control_panel">
@@ -137,7 +123,11 @@ class App extends Component {
                     startTimestamp={this.state.startTimestamp}
                 >
                     <div className="section">
-                        <button className="button" onMouseUp={this.handleClick} style={{backgroundColor: this.state.color}}>{`${this.state.color} button`}</button>
+                        <button
+                            className="button"
+                            onMouseUp={this.handleClick}
+                            style={{ backgroundColor: color }}
+                        >{`${color} button`}</button>
                     </div>
                 </Ripple>
             </div>
