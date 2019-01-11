@@ -46,8 +46,10 @@ class App extends Component {
             isReplaying: true,
         });
         let records = this.state.records.slice(0);
+        console.log(records);
         if (this.state.records.length > 0 && !this.state.isRecording) {
             for (const r of records) {
+                console.log(r);
                 setTimeout(() => {
                     const record = records.shift();
                     console.log('call', record);
