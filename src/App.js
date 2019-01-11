@@ -26,6 +26,7 @@ class App extends Component {
     }
 
     startRecord = e => {
+        console.log('start record');
         e.stopPropagation();
         e.preventDefault();
         this.setState({
@@ -36,6 +37,7 @@ class App extends Component {
     };
 
     stopRecord = e => {
+        console.log('stop record');
         e.stopPropagation();
         e.preventDefault();
         // submit records
@@ -43,6 +45,8 @@ class App extends Component {
             isRecording: false,
             stopTimestamp: Date.now(),
         });
+       
+        API.saveRecord(this.state.records);
     };
 
     startReplay = e => {
@@ -105,28 +109,28 @@ class App extends Component {
     handleClick = (e) => {
         e.stopPropagation();
         e.preventDefault();
-        console.log('click');
-        if (this.state.color === 'blue') {
-            this.setState({color: 'yellow'});
-        } else if (this.state.color === 'yellow') {
-            this.setState({color: 'red'});
-        } else {
-            this.setState({color: 'blue'});
-        }
-        // let index = this.state.index;
-        // index++;
-        // if (index > this.colorSet.length - 1) {
-        //     index = 0;
+        // console.log('click');
+        // if (this.state.color === 'blue') {
+        //     this.setState({color: 'yellow'});
+        // } else if (this.state.color === 'yellow') {
+        //     this.setState({color: 'red'});
+        // } else {
+        //     this.setState({color: 'blue'});
         // }
-        // // console.log(color);
-        // this.setState({
-        //     index,
-        // });
+        let index = this.state.index;
+        index++;
+        if (index > this.colorSet.length - 1) {
+            index = 0;
+        }
+        // console.log(color);
+        this.setState({
+            index,
+        });
 
     }
 
     render() {
-        // const color = this.state.colorSet[this.state.color];
+        const color = this.colorSet[this.state.index];
         return (
             <div className="App">
                 <div className="control_panel">
@@ -147,7 +151,7 @@ class App extends Component {
                     startTimestamp={this.state.startTimestamp}
                 >
                     <div className="section">
-                        <button className="button" onMouseUp={this.handleClick} style={{backgroundColor: this.state.color}}>{`${this.state.color} button`}</button>
+                        <button className="button" onMouseUp={this.handleClick} style={{backgroundColor: color}}>{`${color} button`}</button>
                     </div>
                 </Ripple>
             </div>

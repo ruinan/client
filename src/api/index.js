@@ -1,18 +1,27 @@
 const request = require('request-promise');
 
 const saveRecord = async (record) => {
-    // const recordJSON = JSON.stringify(record);
+    console.log(record);
+    const temp = [{
+        "x": 75.08418273925781, 
+        "y": 62.62626266479492, 
+        "operation": "down", 
+        "target": "button.button", 
+        "timestamp": 485
+    }];
+    
     const option = {
         uri: 'http://localhost:4000/records',
         method: 'PUT',
         json: true,
         body: {
-            record,
+            temp,
         },
     }
     try {
-        const response = await request(option);
-        console.log(response);
+        console.log(option);
+        await request(option);
+        console.log('save');
     } catch (error) {
         // logger && raven
         const message = 'Cannot put the record!'
