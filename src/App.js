@@ -3,19 +3,27 @@ import Ripple from './components/Ripple';
 import RecordPanel from './components/RecordPanel';
 import './App.css';
 import './components/RecordPanel.css';
+import API from './api';
 
 class App extends Component {
     state = {
         isRecording: false,
         isReplaying: false,
         records: [],
+        recordsList: [],
         record: undefined,
         startTimestamp: -1,
         stopTimestamp: -1,
         index: 0,
-        color: 'blue',
     };
     colorSet = ['blue', 'yellow', 'red'];
+
+    async componentDidMount() {
+        const result = await API.getAllRecords();
+        this.setState({
+            recordsList: result,
+        });
+    }
 
     startRecord = e => {
         e.stopPropagation();
