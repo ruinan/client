@@ -15,11 +15,17 @@ class App extends Component {
         startTimestamp: -1,
         stopTimestamp: -1,
         index: 0,
+        name: '',
     };
     colorSet = ['blue', 'yellow', 'red'];
 
+    handleNameChange = (name) => {
+        this.setState({name});
+    }
+
     async componentDidMount() {
         const result = await API.getAllRecords();
+        console.log(result);
         this.setState({
             recordsList: result,
         });
@@ -45,7 +51,6 @@ class App extends Component {
             isRecording: false,
             stopTimestamp: Date.now(),
         });
-       
         API.saveRecord(this.state.records);
     };
 
@@ -109,24 +114,19 @@ class App extends Component {
     handleClick = (e) => {
         e.stopPropagation();
         e.preventDefault();
-        // console.log('click');
-        // if (this.state.color === 'blue') {
-        //     this.setState({color: 'yellow'});
-        // } else if (this.state.color === 'yellow') {
-        //     this.setState({color: 'red'});
-        // } else {
-        //     this.setState({color: 'blue'});
-        // }
         let index = this.state.index;
         index++;
         if (index > this.colorSet.length - 1) {
             index = 0;
         }
-        // console.log(color);
         this.setState({
             index,
         });
 
+    }
+
+    buttonMouseDown = (e) => {
+        console.log('button down');
     }
 
     render() {
@@ -141,6 +141,7 @@ class App extends Component {
                         stopReplay={this.stopReplay}
                         isRecording={this.state.isRecording}
                         isReplaying={this.state.isReplaying}
+                        changeName={this.handleNameChange}
                     />
                 </div>
                 <Ripple
@@ -149,9 +150,10 @@ class App extends Component {
                     updateRecord={this.updateRecord}
                     record={this.state.record}
                     startTimestamp={this.state.startTimestamp}
+                    color={color}
                 >
                     <div className="section">
-                        <button className="button" onMouseUp={this.handleClick} style={{backgroundColor: color}}>{`${color} button`}</button>
+                        <button className="button" onMouseUp={this.handleClick} style={{backgroundColor: color}} onMouseDown={this.buttonMouseDown}>{`${color} button`}</button>
                     </div>
                 </Ripple>
             </div>

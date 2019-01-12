@@ -1,21 +1,12 @@
 const request = require('request-promise');
 
-const saveRecord = async (record) => {
-    console.log(record);
-    const temp = [{
-        "x": 75.08418273925781, 
-        "y": 62.62626266479492, 
-        "operation": "down", 
-        "target": "button.button", 
-        "timestamp": 485
-    }];
-    
+const saveRecord = async (records) => {
     const option = {
         uri: 'http://localhost:4000/records',
         method: 'PUT',
         json: true,
         body: {
-            temp,
+            records,
         },
     }
     try {
@@ -38,7 +29,8 @@ const getAllRecords = async () => {
     }
     try {
         const response = await request(option);
-        console.log(response);
+        // console.log(response.toJson());
+        return response;
     } catch (error) {
         const message = 'Cannot put the record!'
         console.error(message);

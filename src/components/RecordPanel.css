@@ -15,7 +15,18 @@ button {
     margin: 0 1rem;
     background-color: black;
     outline: none;
+    box-sizing: border-box;
 }
+
+input {
+    height: 3rem;
+    width: 12rem;
+    border: 1px solid gray;
+    padding: 0 1rem;
+    flex: 2 2 100%;
+    box-sizing: border-box;
+}
+
 
 @media screen and (max-width: 900px) {
     .button {
@@ -25,15 +36,15 @@ button {
 }
 
 button:active {
-    background-color: gray;
+    background-color: #dddbdb;
 }
 
 .start {
-    background-color: green;
+    background-color: #2ad110;
 }
 
 .stop {
-    background-color: red;
+    background-color: #ed0455;
     animation: heartbeat;
     animation-duration: 2s;
     animation-iteration-count: infinite;
