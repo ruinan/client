@@ -6,18 +6,12 @@ export default class RecordPanel extends Component {
 
     state = {
         selectOption: null,
-        // options: [],
     };
-
-    // componentDidUpdate (prevProps) {
-    //     if (prevProps.recordsList !== this.props.recordsList) {
-    //         if 
-    //     }
-    // }
 
     handleSelectorChange = (selectedOption) => {
         this.setState({ selectedOption });
         console.log(`Option selected:`, selectedOption);
+        this.props.loadSelectRecord(selectedOption.id);
     }
 
     handleInputChange = (e) => {
@@ -30,12 +24,6 @@ export default class RecordPanel extends Component {
         const replayFunction = this.props.isReplaying
             ? this.props.stopReplay
             : this.props.startReplay;
-
-            // const options = [
-            //     { value: 'chocolate', label: 'Chocolate' },
-            //     { value: 'strawberry', label: 'Strawberry' },
-            //     { value: 'vanilla', label: 'Vanilla' }
-            //   ];
 
             console.log(this.props.recordsList);
             const options = this.props.recordsList.map(r => ({
@@ -72,7 +60,11 @@ export default class RecordPanel extends Component {
                     height: '100%',
                     width: '80%',
                 }),
-                outline: 'none'
+                menu: styles => ({
+                    ...styles,
+                    borderRadius: '0',
+                    backgroundColor: 'white'
+                }),
               };
         return (
             <div className="container">
@@ -90,8 +82,8 @@ export default class RecordPanel extends Component {
                 <div className='area'>
                     <Select
                         styles={styles}
-                        value={this.state.selectOption}
-                        onChange={this.handleChange}
+                        defaultValue={this.state.selectOption}
+                        onChange={this.handleSelectorChange}
                         options={options}
                         placeholder='Select a record'
                     />

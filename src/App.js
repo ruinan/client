@@ -24,6 +24,10 @@ class App extends Component {
     }
 
     async componentDidMount() {
+        this.fetchRecords();
+    }
+
+    fetchRecords = async () => {
         const result = await API.getAllRecords();
         console.log(result);
         this.setState({
@@ -33,6 +37,9 @@ class App extends Component {
 
     startRecord = e => {
         console.log('start record');
+        if (!this.state.name || this.state.name.length === 0) {
+            return;
+        }
         e.stopPropagation();
         e.preventDefault();
         this.setState({
@@ -42,7 +49,7 @@ class App extends Component {
         });
     };
 
-    stopRecord = e => {
+    stopRecord = async e => {
         console.log('stop record');
         e.stopPropagation();
         e.preventDefault();
@@ -51,7 +58,8 @@ class App extends Component {
             isRecording: false,
             stopTimestamp: Date.now(),
         });
-        API.saveRecord(this.state.records);
+        await API.saveRecord(this.state.records, this.state.name);
+        await this.fetchRecords();
     };
 
     startReplay = e => {
@@ -59,6 +67,9 @@ class App extends Component {
         e.stopPropagation();
         e.preventDefault();
         console.log('start replay');
+        if (!this.state.records || this.state.records.length === 0) {
+            return;
+        }
         this.setState({
             isReplaying: true,
         });
@@ -122,11 +133,21 @@ class App extends Component {
         this.setState({
             index,
         });
-
     }
+
 
     buttonMouseDown = (e) => {
         console.log('button down');
+    }
+
+    loadSelectRecord = (id) => {
+        const record = this.state.recordsList.find(e => e.id === id);
+        console.log(record.path);
+        if (record) {
+            this.setState({
+                records: record.path,
+            });
+        }
     }
 
     render() {
@@ -147,6 +168,7 @@ class App extends Component {
                            name: r.name,
                            id: r['_id'], 
                         }))}
+                        loadSelectRecord={this.loadSelectRecord}
                     />
                 </div>
                 <Ripple

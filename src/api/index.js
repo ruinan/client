@@ -1,12 +1,13 @@
 const request = require('request-promise');
 
-const saveRecord = async (records) => {
+const saveRecord = async (records, name) => {
     const option = {
         uri: 'http://localhost:4000/records',
         method: 'PUT',
         json: true,
         body: {
             records,
+            name
         },
     }
     try {
