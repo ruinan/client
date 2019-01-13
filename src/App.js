@@ -142,6 +142,10 @@ class App extends Component {
                         isRecording={this.state.isRecording}
                         isReplaying={this.state.isReplaying}
                         changeName={this.handleNameChange}
+                        recordsList={this.state.recordsList.map(r => ({
+                           name: r.name,
+                           id: r['_id'], 
+                        }))}
                     />
                 </div>
                 <Ripple
