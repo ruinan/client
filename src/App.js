@@ -142,6 +142,7 @@ class App extends Component {
                         isRecording={this.state.isRecording}
                         isReplaying={this.state.isReplaying}
                         changeName={this.handleNameChange}
+                        name={this.state.name}
                         recordsList={this.state.recordsList.map(r => ({
                            name: r.name,
                            id: r['_id'], 

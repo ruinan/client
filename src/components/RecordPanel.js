@@ -42,7 +42,6 @@ export default class RecordPanel extends Component {
                 value: r.id,
                 label: r.id,
             }));
-            console.log();
 
               const styles = {
                 container: styles => ({
@@ -78,7 +77,7 @@ export default class RecordPanel extends Component {
         return (
             <div className="container">
                 <div className='area'>
-                    <input type='text' onChange={this.handleInputChange} placeholder='Give record a name'/>
+                    <input type='text' onChange={this.handleInputChange} placeholder='Give record a name' value={this.props.name} className={this.props.name.length > 0 ? '' : 'error'}/>
                     <button
                         className={`${this.props.isRecording ? 'stop' : 'start'}`}
                         disabled={this.props.isReplaying}

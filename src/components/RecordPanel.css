@@ -92,3 +92,7 @@ button:active {
 .Select-control {
     height: 3rem;
 }
+
+.error {
+    border-color: #ed0455;
+}
