@@ -44,13 +44,13 @@ export default class Ripple extends Component {
                 console.log(this.props.record.x, this.props.record.y);
                 const element = document.elementFromPoint(this.props.record.x, this.props.record.y); // view port
                 ReactTestUtils.Simulate.mouseDown(element);
-            } else if (this.props.record && this.props.record.operation === MOVE) {
-                ReactTestUtils.Simulate.mouseMove(this.props.record.target);
-            }  else if (this.props.record && this.props.record.operation === UP) {
+            } else if (this.props.record && this.props.record.operation === UP) {
                 // ReactTestUtils.Simulate.mouseUp(this.props.record.target);
                 const element = document.elementFromPoint(this.props.record.x, this.props.record.y);// view port
                 ReactTestUtils.Simulate.mouseUp(element);
             }
+            console.log('record color and props color', this.props.record.color, this.props.color);
+            this.props.compareRecord(this.props.record.color, this.props.color);
             this.setState({
                 left,
                 top,

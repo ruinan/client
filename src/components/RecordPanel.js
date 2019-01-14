@@ -10,8 +10,8 @@ export default class RecordPanel extends Component {
 
     handleSelectorChange = (selectedOption) => {
         this.setState({ selectedOption });
-        console.log(`Option selected:`, selectedOption);
-        this.props.loadSelectRecord(selectedOption.id);
+        console.log(`Option selected:`, selectedOption.value);
+        this.props.loadSelectRecord(selectedOption.value);
     }
 
     handleInputChange = (e) => {
@@ -28,7 +28,7 @@ export default class RecordPanel extends Component {
             console.log(this.props.recordsList);
             const options = this.props.recordsList.map(r => ({
                 value: r.id,
-                label: r.id,
+                label: r.name,
             }));
 
               const styles = {
@@ -89,10 +89,10 @@ export default class RecordPanel extends Component {
                     />
                     <button
                         className={`${this.props.isReplaying ? 'stop' : 'replay'}`}
-                        disabled={this.props.isRecording}
+                        disabled={this.props.isRecording || this.props.isReplaying}
                         onClick={replayFunction}
                     >
-                        {this.props.isReplaying ? 'Stop' : 'Replay'}
+                        {this.props.isReplaying ? 'Replaying' : 'Replay'}
                     </button>
                 </div>
             </div>
