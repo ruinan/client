@@ -55,13 +55,8 @@ export const getOneRecord = async (id) => {
     }
 }
 
-export const socketListener = async () => {
-    console.log('socket');
+export const socketListener =  () => {
+    console.log('socket listener initiated');
     const socket = openSocket('http://localhost:4000');
-    const result = await socket.emit('record', {message: 'async test'});
-    console.log(result);
-    // socket.on('record', data => {
-    //     console.log(data);
-    // });
     return socket;
 };
