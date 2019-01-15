@@ -9,13 +9,28 @@ button {
     padding: 0 1rem;
     font-size: 11px;
     color: white;
-    margin: 1rem 0;
     line-height: 3rem;
     border: none;
-    margin: 0 1rem;
     background-color: black;
     outline: none;
+    box-sizing: border-box;
+    display: block;
 }
+
+input {
+    height: 3rem;
+    width: 70%;
+    min-width: 15rem;
+    border: 1px solid gray;
+    padding: 0 1rem;
+    flex: 2 2 100%;
+    box-sizing: border-box;
+    display: block;
+    outline: none;
+    margin-right: 1rem;
+    font-size: 11px;
+}
+
 
 @media screen and (max-width: 900px) {
     .button {
@@ -25,18 +40,25 @@ button {
 }
 
 button:active {
-    background-color: gray;
+    background-color: #dddbdb;
 }
 
 .start {
-    background-color: green;
+    background-color: #2ad110;
+    width: 20%;
 }
 
 .stop {
-    background-color: red;
+    background-color: #ed0455;
     animation: heartbeat;
     animation-duration: 2s;
     animation-iteration-count: infinite;
+    width: 20%;
+}
+
+.replay {
+    background-color: #4c90ff;
+    width: 20%;
 }
 
 @keyframes heartbeat {
@@ -51,6 +73,26 @@ button:active {
     }
 }
 
-.replay {
-    background-color: blue;
+.area {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.area:last-child {
+    margin: 0;
+}
+
+.select {
+    height: 3rem;
+}
+
+.Select-control {
+    height: 3rem;
+}
+
+.error {
+    border-color: #ed0455;
 }
