@@ -19,6 +19,7 @@ class App extends Component {
         index: 0,
         index2: 0,
         name: '',
+        socket: undefined,
     };
 
     colorSet = ['blue', 'yellow', 'red'];
@@ -30,6 +31,14 @@ class App extends Component {
     async componentDidMount() {
         this.fetchRecords();
         API.socketListener();
+        const socket = await API.socketListener();
+        this.setState({
+            socket,
+        });
+    }
+
+    componentWillUnmount() {
+        console.log(this.state.socket.disconnected);
     }
 
     fetchRecords = async () => {
