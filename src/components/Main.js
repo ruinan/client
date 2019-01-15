@@ -3,8 +3,8 @@ import Ripple from './Ripple';
 import RecordPanel from './RecordPanel';
 import './Main.css';
 import './RecordPanel.css';
-import API from '../api';
-import {Link} from 'react-router-dom';
+import * as API from '../api';
+import { Link } from 'react-router-dom';
 
 class App extends Component {
     state = {
@@ -23,12 +23,13 @@ class App extends Component {
 
     colorSet = ['blue', 'yellow', 'red'];
 
-    handleNameChange = (name) => {
-        this.setState({name});
-    }
+    handleNameChange = name => {
+        this.setState({ name });
+    };
 
     async componentDidMount() {
         this.fetchRecords();
+        API.socketListener();
     }
 
     fetchRecords = async () => {
@@ -37,7 +38,7 @@ class App extends Component {
         this.setState({
             recordsList: result,
         });
-    }
+    };
 
     startRecord = e => {
         console.log('start record');
@@ -82,27 +83,23 @@ class App extends Component {
         if (this.state.records.length > 0 && !this.state.isRecording) {
             for (const r of records) {
                 console.log(r);
-               setTimeout(() => {
+                setTimeout(() => {
                     const record = records.shift();
                     console.log('call', record);
                     if (this.state.isReplaying) {
                         this.setState({ record });
-                    } 
+                    }
                     if (records.length === 0) {
                         setTimeout(() => {
-                            
-                            this.setState({isReplaying: false});
+                            this.setState({ isReplaying: false });
                         }, 10);
-                        
                     }
                 }, r.timestamp);
-            } 
-            
+            }
         }
     };
-    
-    stopReplay = e => {
 
+    stopReplay = e => {
         if (!this.state.isReplaying) {
             e.stopPropagation();
             e.preventDefault();
@@ -124,17 +121,17 @@ class App extends Component {
         });
     };
 
-    handleMouseDown = (e) => {
+    handleMouseDown = e => {
         e.stopPropagation();
         console.log('button down');
-    }
+    };
 
-    handleMouseUp = (e) => {
+    handleMouseUp = e => {
         e.stopPropagation();
         console.log('button up');
-    }
+    };
 
-    handleClick = (e) => {
+    handleClick = e => {
         e.stopPropagation();
         e.preventDefault();
         let index = this.state.index;
@@ -145,8 +142,8 @@ class App extends Component {
         this.setState({
             index,
         });
-    }
-    handleClick2 = (e) => {
+    };
+    handleClick2 = e => {
         e.stopPropagation();
         e.preventDefault();
         let index = this.state.index2;
@@ -157,14 +154,13 @@ class App extends Component {
         this.setState({
             index2: index,
         });
-    }
+    };
 
-
-    buttonMouseDown = (e) => {
+    buttonMouseDown = e => {
         console.log('button down');
-    }
+    };
 
-    loadSelectRecord = (id) => {
+    loadSelectRecord = id => {
         console.log(id);
         const record = this.state.recordsList.find(e => e['_id'] === id);
         console.log('all', this.state.recordsList);
@@ -173,14 +169,14 @@ class App extends Component {
                 records: record.path,
             });
         }
-    }
+    };
 
     compareRecord = (current, record) => {
         if (current !== record) {
             console.log('not match');
-            this.setState({isMatch: false});
+            this.setState({ isMatch: false });
         }
-    }
+    };
 
     render() {
         const color = this.colorSet[this.state.index];
@@ -198,8 +194,8 @@ class App extends Component {
                         changeName={this.handleNameChange}
                         name={this.state.name}
                         recordsList={this.state.recordsList.map(r => ({
-                           name: r.name,
-                           id: r['_id'], 
+                            name: r.name,
+                            id: r['_id'],
                         }))}
                         loadSelectRecord={this.loadSelectRecord}
                     />
@@ -214,16 +210,28 @@ class App extends Component {
                     color={testColor}
                 >
                     <div className="section">
-                        <button className="button" onMouseUp={this.handleClick} style={{backgroundColor: color}} onMouseDown={this.buttonMouseDown}>{`${color} button`}</button>
-                        <div style={{height: '1rem', width: '1rem'}}/>
-                        <button className="button" onMouseUp={this.handleClick2} style={{backgroundColor: testColor}} onMouseDown={this.buttonMouseDown}>{`Unexpected`}</button>
+                        <button
+                            className="button"
+                            onMouseUp={this.handleClick}
+                            style={{ backgroundColor: color }}
+                            onMouseDown={this.buttonMouseDown}
+                        >{`${color} button`}</button>
+                        <div style={{ height: '1rem', width: '1rem' }} />
+                        <button
+                            className="button"
+                            onMouseUp={this.handleClick2}
+                            style={{ backgroundColor: testColor }}
+                            onMouseDown={this.buttonMouseDown}
+                        >{`Unexpected`}</button>
                     </div>
                 </Ripple>
-                
-                <div className='control_panel'>
-                    <Link to='/dashboard'>Dashboard</Link>
+
+                <div className="control_panel">
+                    <Link to="/dashboard">Dashboard</Link>
                 </div>
-                {this.state.isMatch ? null : <div className='error'>Not Match</div>}
+                {this.state.isMatch ? null : (
+                    <div className="error">Not Match</div>
+                )}
             </div>
         );
     }
