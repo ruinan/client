@@ -29,12 +29,17 @@ class App extends Component {
     };
 
     async componentDidMount() {
-        this.fetchRecords();
-        API.socketListener();
-        const socket = await API.socketListener();
-        this.setState({
-            socket,
-        });
+        try {
+            this.fetchRecords();
+            API.socketListener();
+            const socket = await API.socketListener();
+            this.setState({
+                socket,
+            });
+        } catch (e) {
+            console.error(e);
+
+        }
     }
 
     componentWillUnmount() {
@@ -219,6 +224,7 @@ class App extends Component {
                     color={testColor}
                 >
                     <div className="section">
+                        <h1 className='background_indicator'>Origin</h1>
                         <button
                             className="button"
                             onMouseUp={this.handleClick}

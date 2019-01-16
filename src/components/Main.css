@@ -30,6 +30,18 @@ body {
     margin-right: auto;
     background-color: transparent;
     padding: 1rem;
+    position: relative;
+}
+
+.background_indicator {
+    position: absolute;
+    top: 10%;
+    left: 0%;
+    right: 0%;
+    user-select: none;
+    z-index: 0;
+    color: white;
+    font-size: 80px;
 }
 
 .error {
