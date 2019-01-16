@@ -5,8 +5,9 @@ import './Main.css';
 import './RecordPanel.css';
 import * as API from '../api';
 import { Link } from 'react-router-dom';
+import * as SocketConnection from '../api/socket';
 
-class App extends Component {
+class Main extends Component {
     state = {
         isRecording: false,
         isReplaying: false,
@@ -19,7 +20,6 @@ class App extends Component {
         index: 0,
         index2: 0,
         name: '',
-        socket: undefined,
     };
 
     colorSet = ['blue', 'yellow', 'red'];
@@ -28,27 +28,14 @@ class App extends Component {
         this.setState({ name });
     };
 
-    async componentDidMount() {
-        try {
+    componentDidMount() {
+        
             this.fetchRecords();
-            API.socketListener();
-            const socket = await API.socketListener();
-            this.setState({
-                socket,
-            });
-        } catch (e) {
-            console.error(e);
-
-        }
-    }
-
-    componentWillUnmount() {
-        console.log(this.state.socket.disconnected);
+     
     }
 
     fetchRecords = async () => {
         const result = await API.getAllRecords();
-        console.log(result);
         this.setState({
             recordsList: result,
         });
@@ -81,28 +68,18 @@ class App extends Component {
         await this.fetchRecords();
     };
 
-    startReplay = e => {
-        // fetch records
-        e.stopPropagation();
-        e.preventDefault();
-        console.log('start replay');
-        if (!this.state.records || this.state.records.length === 0) {
-            return;
-        }
-        this.setState({
-            isReplaying: true,
-        });
-        let records = this.state.records.slice(0);
-        console.log(records);
-        if (this.state.records.length > 0 && !this.state.isRecording) {
+    replay = records => {
+        if (records.length > 0 && !this.state.isRecording) {
             for (const r of records) {
-                console.log(r);
                 setTimeout(() => {
+                    // use setTimeout to replay the path based on the sequence and timestamp
                     const record = records.shift();
-                    console.log('call', record);
-                    if (this.state.isReplaying) {
-                        this.setState({ record });
-                    }
+                    this.setState({ record });
+                    SocketConnection.emit(this.props.socket, {
+                        status: 'running',
+                        id: this.state.records['_id'],
+                        name: this.state.records.name,
+                    });
                     if (records.length === 0) {
                         setTimeout(() => {
                             this.setState({ isReplaying: false });
@@ -111,6 +88,28 @@ class App extends Component {
                 }, r.timestamp);
             }
         }
+    };
+
+    startReplay = e => {
+        // fetch records
+        e.stopPropagation();
+        e.preventDefault();
+
+        if (!this.state.records || this.state.records.length === 0) {
+            // no records
+            return;
+        }
+        this.setState({
+            // update flag
+            isReplaying: true,
+        });
+        let records = this.state.records.path.slice(0);
+        SocketConnection.emit(this.props.socket, {
+            status: 'start',
+            id: this.state.records['_id'],
+            name: this.state.records.name,
+        }); // call socket
+        this.replay(records); // replay records
     };
 
     stopReplay = e => {
@@ -170,17 +169,11 @@ class App extends Component {
         });
     };
 
-    buttonMouseDown = e => {
-        console.log('button down');
-    };
-
     loadSelectRecord = id => {
-        console.log(id);
-        const record = this.state.recordsList.find(e => e['_id'] === id);
-        console.log('all', this.state.recordsList);
-        if (record) {
+        const records = this.state.recordsList.find(e => e['_id'] === id);
+        if (records) {
             this.setState({
-                records: record.path,
+                records,
             });
         }
     };
@@ -224,7 +217,7 @@ class App extends Component {
                     color={testColor}
                 >
                     <div className="section">
-                        <h1 className='background_indicator'>Origin</h1>
+                        <h1 className="background_indicator">Origin</h1>
                         <button
                             className="button"
                             onMouseUp={this.handleClick}
@@ -242,7 +235,9 @@ class App extends Component {
                 </Ripple>
 
                 <div className="control_panel">
-                    <Link to="/dashboard">Dashboard</Link>
+                    <Link to="/dashboard" className="link">
+                        Dashboard
+                    </Link>
                 </div>
                 {this.state.isMatch ? null : (
                     <div className="error">Not Match</div>
@@ -252,4 +247,4 @@ class App extends Component {
     }
 }
 
-export default App;
+export default Main;
