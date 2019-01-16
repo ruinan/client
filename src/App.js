@@ -12,7 +12,7 @@ export default class App extends Component {
         <Router>
             <div>
                 <Route exact component={(props)=> (<Main {...props} socket={socket}/>)} path="/" />
-                <Route exact component={(props)=> (<Dashboard {...props} socket={socket}/>)} path='/dashboard'/>
+                <Route exact component={(Dashboard)} path='/dashboard'/>
             </div>
         </Router>);
     }
