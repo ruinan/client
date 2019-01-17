@@ -1,5 +1,5 @@
 import request from 'request-promise';
-import openSocket from 'socket.io-client';
+import io from 'socket.io-client';
 
 export const saveRecord = async (records, name) => {
     const option = {
@@ -58,6 +58,6 @@ export const getOneRecord = async (id) => {
 
 export const socketListener = () => {
     console.log('socket listener initiated');
-    const socket = openSocket('http://localhost:4000');
+    const socket = io('http://localhost:4000');
     return socket;
 };

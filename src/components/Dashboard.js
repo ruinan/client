@@ -1,16 +1,40 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import './Dashboard.css';
-// import * as API from '../api';
+import SocketContext from '../SocketContext';
+import * as API from '../api';
 // import * as SocketConnection from '../api/socket';
 export default class Dashboard extends Component {
+    state = {
+        messages: [],
+    };
+    static contextType = SocketContext;
 
+    componentDidMount() {
+        console.log('did mount', this.props.socket);
+        const socket = API.socketListener();
+        socket.on('record', data => {
+            console.log(data);
+            this.setState(prevState => {
+                const messages = prevState.messages.slice(0);
+                messages.unshift(data);
+                return {
+                    messages,
+                };
+            });
+        });
+        // SocketConnection.receive(this.context);
+        // this.props.socket.on('message', (data) => {
+
+        //     console.log(data);
+        // });
+    }
     // messages = [];
     // componentDidMount() {
-        
+
     //         // const r = await SocketConnection.receive(this.props.socket);
     //         // console.log(r);
-        
+
     //     // try {
     //     //     const socket = API.socketListener();
     //     //     const data = await SocketConnection.receive(socket);
@@ -42,24 +66,24 @@ export default class Dashboard extends Component {
     //     // this.
     // }
 
-    // constructMessage = () => {
-    //     console.log(this.messages.length);
-    //     const result = this.messages.map(m => {
-    //         return <div className="message">{`Status: ${m.status}   id: ${m.id}    name: ${m.name}`}</div>;
-    //     });
-    //     return result;
-    // };
+    constructMessage = () => {
+        console.log(this.state.messages.length);
+        const result = this.state.messages.map((m, i) => {
+            return <div key={i} className="message">{`Status: ${m.status}   id: ${m.id}    name: ${m.name}`}</div>;
+        });
+        return result;
+    };
 
     render() {
-        // const messages = this.constructMessage();
-        // console.log('render', messages);
+        const messages = this.constructMessage();
+        console.log('render', messages);
         // console.log('call mounted', this.props.socket);
-        
+
         return (
             <div>
                 <h3>Dashboard</h3>
                 <div>
-                    <div className="message_container">messages</div>
+                    <div className="message_container">{messages}</div>
                     <Link to="/">Main page</Link>
                 </div>
             </div>

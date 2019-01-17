@@ -6,6 +6,7 @@ import './RecordPanel.css';
 import * as API from '../api';
 import { Link } from 'react-router-dom';
 import * as SocketConnection from '../api/socket';
+import SocketContext from '../SocketContext';
 
 class Main extends Component {
     state = {
@@ -20,8 +21,10 @@ class Main extends Component {
         index: 0,
         index2: 0,
         name: '',
+        ids: [],
     };
 
+    static contextType = SocketContext;
     colorSet = ['blue', 'yellow', 'red'];
 
     handleNameChange = name => {
@@ -29,9 +32,14 @@ class Main extends Component {
     };
 
     componentDidMount() {
-        
-            this.fetchRecords();
-     
+        this.fetchRecords();
+        console.log(this.props.socket);
+    }
+
+    componentWillUnmount() {
+        for (const id of this.state.ids) {
+            clearTimeout(id);
+        }
     }
 
     fetchRecords = async () => {
@@ -70,23 +78,27 @@ class Main extends Component {
 
     replay = records => {
         if (records.length > 0 && !this.state.isRecording) {
+            const ids = [];
             for (const r of records) {
-                setTimeout(() => {
+                const id = setTimeout(() => {
                     // use setTimeout to replay the path based on the sequence and timestamp
                     const record = records.shift();
                     this.setState({ record });
-                    SocketConnection.emit(this.props.socket, {
-                        status: 'running',
-                        id: this.state.records['_id'],
-                        name: this.state.records.name,
-                    });
+
                     if (records.length === 0) {
                         setTimeout(() => {
+                            SocketConnection.emit(this.props.socket, {
+                                status: 'stop replay',
+                                id: this.state.records['_id'],
+                                name: this.state.records.name,
+                            });
                             this.setState({ isReplaying: false });
                         }, 10);
                     }
                 }, r.timestamp);
+                ids.push(id);
             }
+            this.setState({ ids }); // if the replaying be interrupted by switching webpage. 
         }
     };
 
@@ -94,7 +106,6 @@ class Main extends Component {
         // fetch records
         e.stopPropagation();
         e.preventDefault();
-
         if (!this.state.records || this.state.records.length === 0) {
             // no records
             return;
@@ -105,7 +116,7 @@ class Main extends Component {
         });
         let records = this.state.records.path.slice(0);
         SocketConnection.emit(this.props.socket, {
-            status: 'start',
+            status: 'start replay',
             id: this.state.records['_id'],
             name: this.state.records.name,
         }); // call socket
@@ -181,6 +192,13 @@ class Main extends Component {
     compareRecord = (current, record) => {
         if (current !== record) {
             console.log('not match');
+            SocketConnection.emit(this.context, {
+                status: 'running',
+                id: this.state.records['_id'],
+                name: this.state.records.name,
+                current,
+                record,
+            });
             this.setState({ isMatch: false });
         }
     };
@@ -188,6 +206,7 @@ class Main extends Component {
     render() {
         const color = this.colorSet[this.state.index];
         const testColor = this.colorSet[this.state.index2];
+
         return (
             <div className="App">
                 <div className="control_panel">
@@ -224,18 +243,18 @@ class Main extends Component {
                             style={{ backgroundColor: color }}
                             onMouseDown={this.buttonMouseDown}
                         >{`${color} button`}</button>
-                        <div style={{ height: '1rem', width: '1rem' }} />
+                        {/* <div style={{ height: '1rem', width: '1rem' }} />
                         <button
                             className="button"
                             onMouseUp={this.handleClick2}
                             style={{ backgroundColor: testColor }}
                             onMouseDown={this.buttonMouseDown}
-                        >{`Unexpected`}</button>
+                        >{`Unexpected`}</button> */}
                     </div>
                 </Ripple>
 
                 <div className="control_panel">
-                    <Link to="/dashboard" className="link">
+                    <Link to="/dashboard" className="link" target="_blank">
                         Dashboard
                     </Link>
                 </div>
