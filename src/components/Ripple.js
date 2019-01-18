@@ -49,7 +49,7 @@ export default class Ripple extends Component {
                 const element = document.elementFromPoint(this.props.record.x, this.props.record.y);// view port
                 ReactTestUtils.Simulate.mouseUp(element);
             }
-            console.log('record color and props color', this.props.record.color, this.props.color);
+            // console.log('record color and props color', this.props.record.color, this.props.color);
             this.props.compareRecord(this.props.record.color, this.props.color);
             this.setState({
                 left,

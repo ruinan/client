@@ -7,7 +7,6 @@ export default class Dashboard extends Component {
     state = {
         messages: [],
         clear: false,
-        isMatch: true,
     };
 
     static contextType = SocketContext;
@@ -33,9 +32,15 @@ export default class Dashboard extends Component {
     }
 
     constructMessage = () => {
-        console.log(this.state.messages.length);
+        // console.log(this.state.messages.length);
         const result = this.state.messages.map((m, i) => {
-            return <div key={i} className="message">{`Status: ${m.message.status}   id: ${m.message.id}    name: ${m.message.name}`}</div>;
+            return <div key={i}>
+                <span>{m.message.status}</span>
+                <span>name: {m.message.name}</span>
+                <span>id: {m.message.id}</span>
+                {m.message.record ? <span>It should be: {m.message.record}</span> : null}
+                {m.message.current ? <span>Current Color: {m.message.current}</span> : null}
+            </div>
         });
         return result;
     };
@@ -45,12 +50,10 @@ export default class Dashboard extends Component {
         console.log('render', messages);
 
         return (
-            <div>
-                <h3>Dashboard</h3>
-                <div>
-                    <div className="message_container">{messages}</div>
-                    <Link to="/">Main page</Link>
-                </div>
+            <div className='dashboard'>
+                <h1>Dashboard</h1>
+                <div className="message_container" >{messages}</div>  
+                <Link to="/">Main page</Link>
             </div>
         );
     }

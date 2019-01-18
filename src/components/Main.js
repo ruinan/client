@@ -10,23 +10,22 @@ import SocketContext from '../SocketContext';
 
 class Main extends Component {
     state = {
-        isRecording: false,
+        isRecording: false, // flags
         isReplaying: false,
         isMatch: true,
         isTestCase: false,
-        records: [],
-        recordsList: [],
-        record: undefined,
+        records: [], // one single path
+        recordsList: [], // all records from database
+        record: undefined, // one record
         startTimestamp: -1,
-        stopTimestamp: -1,
-        index: 0,
-        testIndex: 0,
+        index: 0, // store the current color change order
+        testIndex: 0, // to generate the 'wrong' color order for testing
         name: '',
-        ids: [],
+        ids: [], // to clear all setTimeout() 
     };
 
     static contextType = SocketContext;
-    colorSet = ['blue', 'yellow', 'red'];
+    colorSet = ['blue', 'yellow', 'red']; // color set
 
     handleNameChange = name => {
         this.setState({ name });
@@ -71,7 +70,6 @@ class Main extends Component {
         // submit records
         this.setState({
             isRecording: false,
-            stopTimestamp: Date.now(),
         });
         await API.saveRecord(this.state.records, this.state.name);
         await this.fetchRecords();
@@ -89,10 +87,17 @@ class Main extends Component {
                     if (records.length === 0) {
                         setTimeout(() => {
                             SocketConnection.emit(this.props.socket, {
-                                status: 'stop replay',
+                                status: 'Stop Replay',
                                 id: this.state.records['_id'],
                                 name: this.state.records.name,
-                                sMatch: this.state.isMatch,
+                            });
+                            // is match?
+                            const status = this.state.isMatch ? 'Success' : 'Failed'
+                            SocketConnection.emit(this.props.socket, {
+                                status: status,
+                                id: this.state.records['_id'],
+                                name: this.state.records.name,
+                                success: this.state.isMatch,
                             });
                             this.setState({ isReplaying: false });
                         }, 10);
@@ -115,11 +120,12 @@ class Main extends Component {
         this.setState({
             // update flag
             isReplaying: true,
+            isMatch: true,
         });
         let records = this.state.records.path.slice(0);
         console.log('start replay', records);
         SocketConnection.emit(this.props.socket, {
-            status: 'start replay',
+            status: 'Start Replay',
             id:  this.state.records['_id'],
             name:  this.state.records.name,
             isMatch: this.state.isMatch,
@@ -197,7 +203,7 @@ class Main extends Component {
 
     compareRecord = (current, record) => {
         if (current !== record) {
-            // console.log('not match');
+            console.log('not match', current, record);
             SocketConnection.emit(this.context, {
                 status: 'Error: ',
                 id: this.state.records['_id'],
@@ -261,13 +267,6 @@ class Main extends Component {
                             style={{ backgroundColor: color }}
                             onMouseDown={this.buttonMouseDown}
                         >{`${color} button`}</button>
-                        {/* <div style={{ height: '1rem', width: '1rem' }} />
-                        <button
-                            className="button"
-                            onMouseUp={this.handleClick2}
-                            style={{ backgroundColor: testColor }}
-                            onMouseDown={this.buttonMouseDown}
-                        >{`Unexpected`}</button> */}
                     </div>
                 </Ripple>
 

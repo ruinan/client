@@ -1,0 +1,38 @@
+.dashboard {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: column;
+    height: 50rem;
+    overflow-y: scroll;
+    width: auto
+}
+
+.message_container {
+    width: 100%;
+    height: auto;
+    min-height: 10rem;
+    background-color: black;
+    color: white;
+    overflow-y: scroll;
+    margin: 1rem 0;
+    padding: 1rem;
+    box-sizing: border-box;
+}
+
+.message_container>div {
+    margin: 0.2rem 0;
+    font-size: 11px;
+    width: 100%;
+    height: auto;
+    box-sizing: border-box;
+}
+
+span {
+    display: inline-block;
+    margin-right: 1rem;
+}
+
+.status {
+    color: gray;
+}
