@@ -51,5 +51,8 @@ body {
 .link {
     color: black;
 }
+.test_mode {
+    background-color: #ffc6d4;
+}
 
 

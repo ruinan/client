@@ -13,13 +13,14 @@ class Main extends Component {
         isRecording: false,
         isReplaying: false,
         isMatch: true,
+        isTestCase: false,
         records: [],
         recordsList: [],
         record: undefined,
         startTimestamp: -1,
         stopTimestamp: -1,
         index: 0,
-        index2: 0,
+        testIndex: 0,
         name: '',
         ids: [],
     };
@@ -84,13 +85,14 @@ class Main extends Component {
                     // use setTimeout to replay the path based on the sequence and timestamp
                     const record = records.shift();
                     this.setState({ record });
-
+                    // console.log(this.state.record);
                     if (records.length === 0) {
                         setTimeout(() => {
                             SocketConnection.emit(this.props.socket, {
                                 status: 'stop replay',
                                 id: this.state.records['_id'],
                                 name: this.state.records.name,
+                                sMatch: this.state.isMatch,
                             });
                             this.setState({ isReplaying: false });
                         }, 10);
@@ -115,10 +117,12 @@ class Main extends Component {
             isReplaying: true,
         });
         let records = this.state.records.path.slice(0);
+        console.log('start replay', records);
         SocketConnection.emit(this.props.socket, {
             status: 'start replay',
-            id: this.state.records['_id'],
-            name: this.state.records.name,
+            id:  this.state.records['_id'],
+            name:  this.state.records.name,
+            isMatch: this.state.isMatch,
         }); // call socket
         this.replay(records); // replay records
     };
@@ -159,6 +163,7 @@ class Main extends Component {
         e.stopPropagation();
         e.preventDefault();
         let index = this.state.index;
+        // console.log('color',index);
         index++;
         if (index > this.colorSet.length - 1) {
             index = 0;
@@ -167,16 +172,17 @@ class Main extends Component {
             index,
         });
     };
-    handleClick2 = e => {
+
+    handleTestClick = e => {
         e.stopPropagation();
         e.preventDefault();
-        let index = this.state.index2;
+        let index = this.state.testIndex;
         index--;
         if (index < 0) {
             index = this.colorSet.length - 1;
         }
         this.setState({
-            index2: index,
+            testIndex: index,
         });
     };
 
@@ -191,21 +197,32 @@ class Main extends Component {
 
     compareRecord = (current, record) => {
         if (current !== record) {
-            console.log('not match');
+            // console.log('not match');
             SocketConnection.emit(this.context, {
-                status: 'running',
+                status: 'Error: ',
                 id: this.state.records['_id'],
                 name: this.state.records.name,
                 current,
                 record,
+                isMatch: this.state.isMatch,
             });
             this.setState({ isMatch: false });
         }
     };
 
+    useTestcase = (status) => {
+        console.log(status);
+        this.setState({
+            isTestCase: status,
+        });
+    }
+
     render() {
-        const color = this.colorSet[this.state.index];
-        const testColor = this.colorSet[this.state.index2];
+        const color = this.state.isTestCase ? this.colorSet[this.state.testIndex]: this.colorSet[this.state.index];
+        const handler = this.state.isTestCase ? this.handleTestClick: this.handleClick;
+        // console.log('render color', color);
+        // const testColor = this.colorSet[this.state.index2];
+
 
         return (
             <div className="App">
@@ -224,6 +241,7 @@ class Main extends Component {
                             id: r['_id'],
                         }))}
                         loadSelectRecord={this.loadSelectRecord}
+                        useTestcase={this.useTestcase}
                     />
                 </div>
                 <Ripple
@@ -233,13 +251,13 @@ class Main extends Component {
                     updateRecord={this.updateRecord}
                     record={this.state.record}
                     startTimestamp={this.state.startTimestamp}
-                    color={testColor}
+                    color={color}
                 >
-                    <div className="section">
-                        <h1 className="background_indicator">Origin</h1>
+                    <div className={`section ${this.state.isTestCase ? 'test_mode' : ''}`}>
+                        <h1 className="background_indicator">{this.state.isTestCase ? 'Test' : 'Origin'}</h1>
                         <button
                             className="button"
-                            onMouseUp={this.handleClick}
+                            onMouseUp={handler}
                             style={{ backgroundColor: color }}
                             onMouseDown={this.buttonMouseDown}
                         >{`${color} button`}</button>

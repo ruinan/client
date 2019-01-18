@@ -3,11 +3,13 @@ import { Link } from 'react-router-dom';
 import './Dashboard.css';
 import SocketContext from '../SocketContext';
 import * as API from '../api';
-// import * as SocketConnection from '../api/socket';
 export default class Dashboard extends Component {
     state = {
         messages: [],
+        clear: false,
+        isMatch: true,
     };
+
     static contextType = SocketContext;
 
     componentDidMount() {
@@ -15,6 +17,11 @@ export default class Dashboard extends Component {
         const socket = API.socketListener();
         socket.on('record', data => {
             console.log(data);
+            if (!data.isMatch) {
+                this.setState({
+                    isMatch: false,
+                });
+            }
             this.setState(prevState => {
                 const messages = prevState.messages.slice(0);
                 messages.unshift(data);
@@ -23,53 +30,12 @@ export default class Dashboard extends Component {
                 };
             });
         });
-        // SocketConnection.receive(this.context);
-        // this.props.socket.on('message', (data) => {
-
-        //     console.log(data);
-        // });
     }
-    // messages = [];
-    // componentDidMount() {
-
-    //         // const r = await SocketConnection.receive(this.props.socket);
-    //         // console.log(r);
-
-    //     // try {
-    //     //     const socket = API.socketListener();
-    //     //     const data = await SocketConnection.receive(socket);
-    //     //     console.log(data);
-    //     // } catch (e) {
-    //     //     throw e;
-    //     // }
-    //     // this.setState((prevState) => {
-    //     //     const messages = prevState.messages.slice(0);
-    //     //     messages.unshift(message);
-    //     //     return {
-    //     //         messages,
-    //     //     };
-    //     // });
-
-    //     // this.props.socket.on('message', data => {
-    //     //     console.log('this is data from Dashboard', data);
-    //     //     // this.messages.push(data);
-    //     //     // console.log('messages', this.messages);
-    //     //     // this.setState((prevState) => {
-    //     //     //         const messages = prevState.messages.slice(0);
-    //     //     //         messages.unshift(data);
-    //     //     //         return {
-    //     //     //             messages,
-    //     //     //         };
-    //     //     //     });
-    //     // });
-
-    //     // this.
-    // }
 
     constructMessage = () => {
         console.log(this.state.messages.length);
         const result = this.state.messages.map((m, i) => {
-            return <div key={i} className="message">{`Status: ${m.status}   id: ${m.id}    name: ${m.name}`}</div>;
+            return <div key={i} className="message">{`Status: ${m.message.status}   id: ${m.message.id}    name: ${m.message.name}`}</div>;
         });
         return result;
     };
@@ -77,7 +43,6 @@ export default class Dashboard extends Component {
     render() {
         const messages = this.constructMessage();
         console.log('render', messages);
-        // console.log('call mounted', this.props.socket);
 
         return (
             <div>

@@ -103,6 +103,7 @@ export default class Ripple extends Component {
             
         });
         if (this.props.isRecording) {
+            console.log('color', this.props.color);
             this.props.updateRecord({
                 ...position,
                 operation: DOWN,
