@@ -11,7 +11,7 @@
 
 ## Process for running app
 1. Unzip the client.zip.
-2. Use VSCode or other editors to load the server and client codes.
+2. Use VSCode or other editors to load the client codes.
 3. Open terminal to run the client with the command `npm i && npm start`. Make sure the Server is running at first.
 4. It will automatically open a webpage to access `localhost:3000`
 
