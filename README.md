@@ -36,6 +36,7 @@ Beside the warning message, a link that to open the dashboard page is there. It 
 ### Result
 The app satisfy the requirement from the section 3 to section 6.
 
+It does not pay attention to the corner cases, error handling, peformance and best practise.
 > If the record is for the mobile size page, it does not satify the destop size page
 
 
