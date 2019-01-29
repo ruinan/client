@@ -11,9 +11,9 @@
 
 ## Process for running app
 1. Make sure you installed MongoDB successfully, and it is running.
-2. Unzip the Server.zip and client.zip into a different folder.
+2. Unzip the client.zip into a different folder.
 3. Use VSCode or other editors to load the server and client codes.
-4. Open terminal to run a server at first then the client with the command `npm i && npm start`.
+4. Open terminal to run the client with the command `npm i && npm start`. Make sure the Server is running at first.
 5. It will automatically open a webpage to access `localhost:3000`
 
 ## Description
