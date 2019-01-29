@@ -18,38 +18,19 @@ export default class Ripple extends Component {
     circle = React.createRef();
 
     componentDidUpdate(prevProps) {
-        if (prevProps.record !== this.props.record) {
-            const left =
-                this.props.record && this.props.isReplaying
-                ? this.props.record.x - 17
-                : this.state.left;
-            const top =
-                this.props.record && this.props.isReplaying
-                    ? this.props.record.y - 17
-                    : this.state.top;
+        if (prevProps.record !== this.props.record && this.props.record && this.props.isReplaying) {
+            const left = this.props.record.x - 17;
+            const top = this.props.record.y - 17;
+            const transform = this.props.record.operation === DOWN || this.props.record.operation === MOVE ? `scale(1)`: `scale(0)`;
+            const opacity = this.props.record.operation === DOWN || this.props.record.operation === MOVE ? 1 : 0;
 
-            const transform =
-                this.props.record && this.props.isReplaying
-                    ? (this.props.record.operation === DOWN || this.props.record.operation === MOVE ? `scale(1)`: `scale(0)`)
-                    : this.state.transform;
-
-            const opacity =
-                this.props.record && this.props.isReplaying
-                    ? (this.props.record.operation === DOWN || this.props.record.operation === MOVE ? 1 : 0)
-                    : this.state.opacity;
-
-            if (this.props.record && this.props.record.operation === DOWN ) {
-                // ReactTestUtils.Simulate.mouseDown(this.props.record.target);
-                // JSON.stringify(this.props.record.target);
-                console.log(this.props.record.x, this.props.record.y);
+            if (this.props.record.operation === DOWN ) {
                 const element = document.elementFromPoint(this.props.record.x, this.props.record.y); // view port
                 ReactTestUtils.Simulate.mouseDown(element);
-            } else if (this.props.record && this.props.record.operation === UP) {
-                // ReactTestUtils.Simulate.mouseUp(this.props.record.target);
+            } else if (this.props.record.operation === UP) {
                 const element = document.elementFromPoint(this.props.record.x, this.props.record.y);// view port
                 ReactTestUtils.Simulate.mouseUp(element);
             }
-            // console.log('record color and props color', this.props.record.color, this.props.color);
             this.props.compareRecord(this.props.record.color, this.props.color);
             this.setState({
                 left,

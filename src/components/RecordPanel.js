@@ -9,7 +9,6 @@ export default class RecordPanel extends Component {
 
     handleSelectorChange = selectedOption => {
         this.setState({ selectedOption });
-        // console.log(`Option selected:`, selectedOption.value);
         this.props.loadSelectRecord(selectedOption.value);
     };
 
@@ -28,7 +27,6 @@ export default class RecordPanel extends Component {
             ? this.props.stopReplay
             : this.props.startReplay;
 
-        // console.log(this.props.recordsList);
         const options = this.props.recordsList.map(r => ({
             value: r.id,
             label: r.name,
@@ -96,6 +94,7 @@ export default class RecordPanel extends Component {
                         onChange={this.handleSelectorChange}
                         options={options}
                         placeholder="Select a record"
+                        isSearchable={false}
                     />
                     <button
                         className={`${

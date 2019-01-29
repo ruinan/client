@@ -15,17 +15,18 @@ class Main extends Component {
         isMatch: true,
         isTestCase: false,
         records: [], // one single path
+        loadedRecords: [], // path from records
         recordsList: [], // all records from database
         record: undefined, // one record
         startTimestamp: -1,
         index: 0, // store the current color change order
         testIndex: 0, // to generate the 'wrong' color order for testing
         name: '',
-        ids: [], // to clear all setTimeout() 
+        ids: [], // to clear all setTimeout()
     };
 
     static contextType = SocketContext;
-    colorSet = ['blue', 'yellow', 'red']; // color set
+    colorSet = ['blue', 'yellow', 'red']; // button color set
 
     handleNameChange = name => {
         this.setState({ name });
@@ -33,11 +34,13 @@ class Main extends Component {
 
     componentDidMount() {
         this.fetchRecords();
-        console.log(this.props.socket);
     }
 
     componentWillUnmount() {
         for (const id of this.state.ids) {
+            // I apply the setTimeout to do the tracking replaying.
+            // During the process, the component will unmount, then the state does not exist.
+            // So, the pending setTimeouts should be cleared.
             clearTimeout(id);
         }
     }
@@ -50,12 +53,11 @@ class Main extends Component {
     };
 
     startRecord = e => {
-        console.log('start record');
+        e.stopPropagation();
+        e.preventDefault();
         if (!this.state.name || this.state.name.length === 0) {
             return;
         }
-        e.stopPropagation();
-        e.preventDefault();
         this.setState({
             isRecording: true,
             records: [],
@@ -64,49 +66,50 @@ class Main extends Component {
     };
 
     stopRecord = async e => {
-        console.log('stop record');
         e.stopPropagation();
         e.preventDefault();
-        // submit records
         this.setState({
             isRecording: false,
+            index: 0, // reset the button color to blue for the replay
         });
-        await API.saveRecord(this.state.records, this.state.name);
-        await this.fetchRecords();
+        await API.saveRecord(this.state.records, this.state.name); // save records into the database
+        await this.fetchRecords(); // fetch the records from database again.
     };
 
     replay = records => {
         if (records.length > 0 && !this.state.isRecording) {
             const ids = [];
-            for (const r of records) {
+            for (const record of records) {
                 const id = setTimeout(() => {
                     // use setTimeout to replay the path based on the sequence and timestamp
-                    const record = records.shift();
                     this.setState({ record });
-                    // console.log(this.state.record);
-                    if (records.length === 0) {
-                        setTimeout(() => {
-                            SocketConnection.emit(this.props.socket, {
-                                status: 'Stop Replay',
-                                id: this.state.records['_id'],
-                                name: this.state.records.name,
-                            });
-                            // is match?
-                            const status = this.state.isMatch ? 'Success' : 'Failed'
-                            SocketConnection.emit(this.props.socket, {
-                                status: status,
-                                id: this.state.records['_id'],
-                                name: this.state.records.name,
-                                success: this.state.isMatch,
-                            });
-                            this.setState({ isReplaying: false });
-                        }, 10);
-                    }
-                }, r.timestamp);
+                }, record.timestamp);
                 ids.push(id);
             }
-            this.setState({ ids }); // if the replaying be interrupted by switching webpage. 
+            this.setState({ ids }); // if the replaying be interrupted by switching webpage.
+            this.replayCompleted(records);
         }
+    };
+
+    replayCompleted = records => {
+        // should wait for all records finish replaying
+        setTimeout(() => {
+            // send a message
+            SocketConnection.emit(this.context, {
+                status: 'Stop Replay',
+                id: this.state.loadedRecords['_id'],
+                name: this.state.loadedRecords.name,
+            });
+            // is match?
+            const status = this.state.isMatch ? 'Success' : 'Failed';
+            SocketConnection.emit(this.context, {
+                status: status,
+                id: this.state.loadedRecords['_id'],
+                name: this.state.loadedRecords.name,
+                success: this.state.isMatch,
+            });
+            this.setState({ isReplaying: false});
+        }, records[records.length - 1].timestamp + 10);
     };
 
     startReplay = e => {
@@ -122,27 +125,14 @@ class Main extends Component {
             isReplaying: true,
             isMatch: true,
         });
-        let records = this.state.records.path.slice(0);
-        console.log('start replay', records);
-        SocketConnection.emit(this.props.socket, {
+        let records = this.state.loadedRecords.path.slice(0);
+        SocketConnection.emit(this.context, {
             status: 'Start Replay',
-            id:  this.state.records['_id'],
-            name:  this.state.records.name,
+            id: this.state.loadedRecords['_id'],
+            name: this.state.loadedRecords.name,
             isMatch: this.state.isMatch,
         }); // call socket
         this.replay(records); // replay records
-    };
-
-    stopReplay = e => {
-        if (!this.state.isReplaying) {
-            e.stopPropagation();
-            e.preventDefault();
-            this.setState({
-                isReplaying: false,
-                records: [],
-                isMatch: true,
-            });
-        }
     };
 
     updateRecord = position => {
@@ -155,21 +145,10 @@ class Main extends Component {
         });
     };
 
-    handleMouseDown = e => {
-        e.stopPropagation();
-        console.log('button down');
-    };
-
-    handleMouseUp = e => {
-        e.stopPropagation();
-        console.log('button up');
-    };
-
     handleClick = e => {
         e.stopPropagation();
         e.preventDefault();
         let index = this.state.index;
-        // console.log('color',index);
         index++;
         if (index > this.colorSet.length - 1) {
             index = 0;
@@ -193,17 +172,16 @@ class Main extends Component {
     };
 
     loadSelectRecord = id => {
-        const records = this.state.recordsList.find(e => e['_id'] === id);
-        if (records) {
+        const loadedRecords = this.state.recordsList.find(e => e['_id'] === id);
+        if (loadedRecords) {
             this.setState({
-                records,
+                loadedRecords,
             });
         }
     };
 
     compareRecord = (current, record) => {
         if (current !== record) {
-            console.log('not match', current, record);
             SocketConnection.emit(this.context, {
                 status: 'Error: ',
                 id: this.state.records['_id'],
@@ -216,19 +194,19 @@ class Main extends Component {
         }
     };
 
-    useTestcase = (status) => {
-        console.log(status);
+    useTestcase = status => {
         this.setState({
             isTestCase: status,
         });
-    }
+    };
 
     render() {
-        const color = this.state.isTestCase ? this.colorSet[this.state.testIndex]: this.colorSet[this.state.index];
-        const handler = this.state.isTestCase ? this.handleTestClick: this.handleClick;
-        // console.log('render color', color);
-        // const testColor = this.colorSet[this.state.index2];
-
+        const color = this.state.isTestCase
+            ? this.colorSet[this.state.testIndex]
+            : this.colorSet[this.state.index];
+        const handler = this.state.isTestCase
+            ? this.handleTestClick
+            : this.handleClick;
 
         return (
             <div className="App">
@@ -237,7 +215,6 @@ class Main extends Component {
                         startRecord={this.startRecord}
                         stopRecord={this.stopRecord}
                         startReplay={this.startReplay}
-                        stopReplay={this.stopReplay}
                         isRecording={this.state.isRecording}
                         isReplaying={this.state.isReplaying}
                         changeName={this.handleNameChange}
@@ -259,8 +236,14 @@ class Main extends Component {
                     startTimestamp={this.state.startTimestamp}
                     color={color}
                 >
-                    <div className={`section ${this.state.isTestCase ? 'test_mode' : ''}`}>
-                        <h1 className="background_indicator">{this.state.isTestCase ? 'Test' : 'Origin'}</h1>
+                    <div
+                        className={`section ${
+                            this.state.isTestCase ? 'test_mode' : ''
+                        }`}
+                    >
+                        <h1 className="background_indicator">
+                            {this.state.isTestCase ? 'Test' : 'Origin'}
+                        </h1>
                         <button
                             className="button"
                             onMouseUp={handler}

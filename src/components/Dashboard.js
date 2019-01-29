@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import './Dashboard.css';
 import SocketContext from '../SocketContext';
-import * as API from '../api';
+
 export default class Dashboard extends Component {
     state = {
         messages: [],
@@ -12,19 +12,23 @@ export default class Dashboard extends Component {
     static contextType = SocketContext;
 
     componentDidMount() {
-        console.log('did mount', this.props.socket);
-        const socket = API.socketListener();
-        socket.on('record', data => {
-            console.log(data);
+        this.listenRecord();
+    }
+
+    listenRecord = () => {
+        this.context.on('record', data => {
+            let state= {};
             if (!data.isMatch) {
-                this.setState({
-                    isMatch: false,
-                });
+                state = {
+                    ...state,
+                    isMatch: false
+                };
             }
             this.setState(prevState => {
-                const messages = prevState.messages.slice(0);
+                const messages = prevState.messages.slice(0); // clone
                 messages.unshift(data);
                 return {
+                    ...state,
                     messages,
                 };
             });
@@ -32,7 +36,6 @@ export default class Dashboard extends Component {
     }
 
     constructMessage = () => {
-        // console.log(this.state.messages.length);
         const result = this.state.messages.map((m, i) => {
             return <div key={i}>
                 <span>{m.message.status}</span>
@@ -47,8 +50,6 @@ export default class Dashboard extends Component {
 
     render() {
         const messages = this.constructMessage();
-        console.log('render', messages);
-
         return (
             <div className='dashboard'>
                 <h1>Dashboard</h1>
