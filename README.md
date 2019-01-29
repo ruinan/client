@@ -10,11 +10,10 @@
 | Windows | Windows 10 version: 1089|
 
 ## Process for running app
-1. Make sure you installed MongoDB successfully, and it is running.
-2. Unzip the client.zip into a different folder.
-3. Use VSCode or other editors to load the server and client codes.
-4. Open terminal to run the client with the command `npm i && npm start`. Make sure the Server is running at first.
-5. It will automatically open a webpage to access `localhost:3000`
+1. Unzip the client.zip.
+2. Use VSCode or other editors to load the server and client codes.
+3. Open terminal to run the client with the command `npm i && npm start`. Make sure the Server is running at first.
+4. It will automatically open a webpage to access `localhost:3000`
 
 ## Description
 
