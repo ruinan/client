@@ -1,7 +1,7 @@
 # Ripple - client
 
 ## Enviroment
-| name | version |
+| Name | Version |
 |:------:|:------:|
 | Nodejs | v10.14.2|
 | npm | 6.4.1|
@@ -17,6 +17,16 @@
 5. It will automatically open a webpage to access `localhost:3000`
 
 ## Description
+
+## Dependencies
+
+Except the `react` and `react-dom`, these dependencies are applied: 
+| Name | Usage |
+|:------:|:------:|
+| react-router & react-router-dom | Implement the routers for Main page and Dashboard page |
+| react-select | For the dropdown |
+| request & request-promise | Send request and receive response that allow me to use async/await |
+| socket.io-client | Establish the socket io client|
 
 ### Design
 A component named Ripple be created that to generate the dot with ripple effection when mouse/touch drag or click. 
